@@ -2,10 +2,15 @@ import java.io.*;
 import java.util.Scanner;
 import static java.lang.Character.toUpperCase;
 
-public class Villains {
+public class Villains extends Randomiser{
+
+    //Global variable for max list size
     int MAXLISTSIZE = 32;
+
+    //Global variable for list entry size
     int ENTRIESSIZE = 3;
     public Villains(){
+        //Declare variables for use throughout class
         Scanner scanner = new Scanner(System.in);
         char randOrSel;
         char playedOrNo;
@@ -13,19 +18,29 @@ public class Villains {
         int tempUpdate = 0;
         boolean randSel = false;
         String villainFile = "src/villains.csv";
+        String[][] villainlist = new String[MAXLISTSIZE][ENTRIESSIZE];
+
+        //Initialise files
+        loadFiles(villainlist, villainFile);
+
+        //Get whether user wants to select or get a random villain
         System.out.println("---------------------------------------------------------------------");
         System.out.println("Would You Like A Random Villain(r) Or Would You Like To Choose One(s)");
         randOrSel = scanner.nextLine().charAt(0);
         randOrSel = toUpperCase(randOrSel);
-        String[][] villainlist = new String[MAXLISTSIZE][ENTRIESSIZE];
-        loadfiles(villainlist, villainFile);
+
+        //Either randomize or select depending on user choice
         if(randOrSel == 'R'){
             while(!randSel) {
+
+                //Get wether they want any or one they have not played
                 System.out.println("---------------------------------------------------------------------");
                 System.out.println("Would you like one you haven't played(y) or not(n)");
                 System.out.println("---------------------------------------------------------------------");
                 playedOrNo = scanner.nextLine().charAt(0);
                 playedOrNo = toUpperCase(playedOrNo);
+
+                //Select randomiser method depending on user choice
                 if (playedOrNo == 'N') {
                     villainID = random(villainlist);
                     randSel = true;
@@ -41,6 +56,8 @@ public class Villains {
         else if(randOrSel == 'S'){
             villainID = select(villainlist);
         }
+
+        //Display the chosen villain
         System.out.println("----------------------------------------");
         System.out.println("Your Chosen Villain Is");
         System.out.println(villainlist[villainID][1]);
@@ -48,21 +65,23 @@ public class Villains {
         System.out.println("---------------------------------------------------------------------");
         System.out.println("Updating Times Played.");
         System.out.println("---------------------------------------------------------------------");
+
+        //Update the villain's played stat by 1
         tempUpdate = Integer.parseInt(villainlist[villainID][2]) + 1;
         villainlist[villainID][2] = String.valueOf(tempUpdate);
         updateFile(villainlist, villainFile);
     }
 
     public int random(String[][] villainlist){
+        //Get random number and find corresponding villains
         int randomNum = (int)(Math.random() * (MAXLISTSIZE-1));
         String[] chosen = villainlist[randomNum];
-
         int villainID = Integer.parseInt(chosen[0])-1;
-
         return villainID;
     }
 
     public int randomNoPlayed(String[][] villainlist){
+        //Create separate list for unplayed villains
         String[][] unplayedVillainList = new String[MAXLISTSIZE][ENTRIESSIZE];
         int unplayedIndex = 0;
         int villainID = 0;
@@ -72,11 +91,13 @@ public class Villains {
                 unplayedIndex++;
             }
         }
+        //If all villains have been played then choose randomly
         if(unplayedIndex == 0){
             System.out.println("All Villains Have Been PLayed. Selecting From All");
             villainID = random(villainlist);
         }
         else{
+            //Get random number and find corresponding villain
             int randomNum = (int)(Math.random() * (unplayedIndex-1));
             String[] chosen = unplayedVillainList[randomNum];
             villainID = Integer.parseInt(chosen[0])-1;
@@ -85,16 +106,21 @@ public class Villains {
     }
 
     public int select(String[][] villainList){
+        //Initialise necessary variables
         Scanner scanner = new Scanner(System.in);
         int villainID = 0;
         boolean validInput = false;
         boolean validID = false;
+
+        //Loop to display all villains and their stats
         for(int i =0; i<MAXLISTSIZE; i++){
             System.out.println("----------------------------------------");
             System.out.println("Villain ID: " + villainList[i][0]);
             System.out.println(villainList[i][1]);
             System.out.println("Times Previously Played: " + villainList[i][2]);
         }
+
+        //Ask user to choose a villain and verify is the input is correct
         while(!validID) {
                 System.out.println("----------------------------------------");
                 System.out.println("Please Enter The Villain ID Of Your Chosen Villain");
@@ -114,8 +140,9 @@ public class Villains {
         return villainID;
     }
 
-    public void loadfiles(String[][] villainlist, String villainFile){
+    public void loadFiles(String[][] villainlist, String villainFile){
         int index = 0;
+        //Read file and load into villainList 2D array
             try (BufferedReader reader = new BufferedReader(new FileReader(villainFile))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -123,6 +150,7 @@ public class Villains {
                     villainlist[index] = splitString;
                     index++;
                 }
+                //Errors if file loading fails
             } catch (FileNotFoundException e) {
                 System.out.println("ERROR: File Not Found");
             } catch (IOException e) {
@@ -131,6 +159,7 @@ public class Villains {
         }
 
         public void updateFile(String[][] villainList, String villainFile){
+        //Write to file to save updated stats
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(villainFile))) {
                 for (int i =0; i<MAXLISTSIZE;i++) {
                     writer.write(villainList[i][0] + "," + villainList[i][1] + "," + villainList[i][2]);
@@ -140,6 +169,4 @@ public class Villains {
                 System.out.println("Error saving villains: " + e.getMessage());
             }
         }
-
-
     }
