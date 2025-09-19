@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 import static java.lang.Character.toUpperCase;
 
@@ -13,6 +10,7 @@ public class Villains {
         char randOrSel;
         char playedOrNo;
         int villainID = 0;
+        int tempUpdate = 0;
         boolean randSel = false;
         String villainFile = "src/villains.csv";
         System.out.println("---------------------------------------------------------------------");
@@ -47,6 +45,12 @@ public class Villains {
         System.out.println("Your Chosen Villain Is");
         System.out.println(villainlist[villainID][1]);
         System.out.println("Times Previously Played: " + villainlist[villainID][2]);
+        System.out.println("---------------------------------------------------------------------");
+        System.out.println("Updating Times Played.");
+        System.out.println("---------------------------------------------------------------------");
+        tempUpdate = Integer.parseInt(villainlist[villainID][2]) + 1;
+        villainlist[villainID][2] = String.valueOf(tempUpdate);
+        updateFile(villainlist, villainFile);
     }
 
     public int random(String[][] villainlist){
@@ -125,5 +129,17 @@ public class Villains {
                 System.out.println("Error loading file: " + e.getMessage());
             }
         }
+
+        public void updateFile(String[][] villainList, String villainFile){
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(villainFile))) {
+                for (int i =0; i<MAXLISTSIZE;i++) {
+                    writer.write(villainList[i][0] + "," + villainList[i][1] + "," + villainList[i][2]);
+                    writer.newLine();
+                }
+            } catch (IOException e) {
+                System.out.println("Error saving villains: " + e.getMessage());
+            }
+        }
+
 
     }
