@@ -12,11 +12,12 @@ public class Villains extends Randomiser{
     public Villains(){
         //Declare variables for use throughout class
         Scanner scanner = new Scanner(System.in);
-        char randOrSel;
-        char playedOrNo;
+        char randOrSel = '#';
+        char playedOrNo = '#';
         int villainID = 0;
         int tempUpdate = 0;
         boolean randSel = false;
+        boolean validInput = false;
         String villainFile = "src/villains.csv";
         String[][] villainlist = new String[MAXLISTSIZE][ENTRIESSIZE];
 
@@ -24,21 +25,38 @@ public class Villains extends Randomiser{
         loadFiles(villainlist, villainFile);
 
         //Get whether user wants to select or get a random villain
-        System.out.println("---------------------------------------------------------------------");
-        System.out.println("Would You Like A Random Villain(r) Or Would You Like To Choose One(s)");
-        randOrSel = scanner.nextLine().charAt(0);
-        randOrSel = toUpperCase(randOrSel);
+        while(!validInput) {
+            System.out.println("---------------------------------------------------------------------");
+            System.out.println("Would You Like A Random Villain(r) Or Would You Like To Select One(s)");
+            randOrSel = scanner.nextLine().charAt(0);
+            randOrSel = toUpperCase(randOrSel);
+            if(randOrSel == 'R' || randOrSel == 'S'){
+                validInput = true;
+            }
+            else{
+                System.out.println("Invalid Input: Try Again");
+            }
+        }
 
         //Either randomize or select depending on user choice
         if(randOrSel == 'R'){
             while(!randSel) {
 
                 //Get wether they want any or one they have not played
-                System.out.println("---------------------------------------------------------------------");
-                System.out.println("Would you like one you haven't played(y) or not(n)");
-                System.out.println("---------------------------------------------------------------------");
-                playedOrNo = scanner.nextLine().charAt(0);
-                playedOrNo = toUpperCase(playedOrNo);
+                validInput = false;
+                while(!validInput) {
+                    System.out.println("---------------------------------------------------------------------");
+                    System.out.println("Would you like one you haven't played(y) or not(n)");
+                    System.out.println("---------------------------------------------------------------------");
+                    playedOrNo = scanner.nextLine().charAt(0);
+                    playedOrNo = toUpperCase(playedOrNo);
+                    if(playedOrNo == 'Y' || playedOrNo == 'N'){
+                        validInput = true;
+                    }
+                    else{
+                        System.out.println("Invalid Input: Try Again");
+                    }
+                }
 
                 //Select randomiser method depending on user choice
                 if (playedOrNo == 'N') {
@@ -64,7 +82,6 @@ public class Villains extends Randomiser{
         System.out.println("Times Previously Played: " + villainlist[villainID][2]);
         System.out.println("---------------------------------------------------------------------");
         System.out.println("Updating Times Played.");
-        System.out.println("---------------------------------------------------------------------");
 
         //Update the villain's played stat by 1
         tempUpdate = Integer.parseInt(villainlist[villainID][2]) + 1;
@@ -74,7 +91,7 @@ public class Villains extends Randomiser{
 
     public int random(String[][] villainlist){
         //Get random number and find corresponding villains
-        int randomNum = (int)(Math.random() * (MAXLISTSIZE-1));
+        int randomNum = (int)(Math.random() * (MAXLISTSIZE));
         String[] chosen = villainlist[randomNum];
         int villainID = Integer.parseInt(chosen[0])-1;
         return villainID;
