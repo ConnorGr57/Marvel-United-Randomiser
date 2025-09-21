@@ -9,11 +9,12 @@ public class Challenge extends Randomiser{
     public Challenge(){
         //Declare variables for use throughout class
         Scanner scanner = new Scanner(System.in);
-        char randOrSel;
-        char playedOrNo;
+        char randOrSel = '#';
+        char playedOrNo = '#';
         int challengeID = 0;
         int tempUpdate = 0;
         boolean randSel = false;
+        boolean validInput = false;
         String challengeFile = "src/challenge.csv";
         String[][] challengeList = new String[MAXLISTSIZE][ENTRIESSIZE];
 
@@ -21,21 +22,38 @@ public class Challenge extends Randomiser{
         loadFiles(challengeList, challengeFile);
 
         //Get whether user wants to select or get a random challenge
-        System.out.println("---------------------------------------------------------------------");
-        System.out.println("Would You Like A Random Challenge(r) Or Would You Like To Choose One(s)");
-        randOrSel = scanner.nextLine().charAt(0);
-        randOrSel = toUpperCase(randOrSel);
+        while(!validInput) {
+            System.out.println("---------------------------------------------------------------------");
+            System.out.println("Would You Like A Random Challenge(r) Or Would You Like To Select One(s)");
+            randOrSel = scanner.nextLine().charAt(0);
+            randOrSel = toUpperCase(randOrSel);
+            if(randOrSel == 'R' || randOrSel == 'S'){
+                validInput = true;
+            }
+            else{
+                System.out.println("Invalid Input: Try Again");
+            }
+        }
 
         //Either randomize or select depending on user choice
         if(randOrSel == 'R'){
             while(!randSel) {
 
                 //Get wether they want any or one they have not played
-                System.out.println("---------------------------------------------------------------------");
-                System.out.println("Would you like one you haven't played(y) or not(n)");
-                System.out.println("---------------------------------------------------------------------");
-                playedOrNo = scanner.nextLine().charAt(0);
-                playedOrNo = toUpperCase(playedOrNo);
+                validInput = false;
+                while (!validInput) {
+                    System.out.println("---------------------------------------------------------------------");
+                    System.out.println("Would you like one you haven't played(y) or not(n)");
+                    System.out.println("---------------------------------------------------------------------");
+                    playedOrNo = scanner.nextLine().charAt(0);
+                    playedOrNo = toUpperCase(playedOrNo);
+                    if(playedOrNo == 'Y' || playedOrNo == 'N'){
+                        validInput = true;
+                    }
+                    else{
+                        System.out.println("Invalid Input: Try Again");
+                    }
+                }
 
                 //Select randomiser method depending on user choice
                 if (playedOrNo == 'N') {
@@ -60,7 +78,6 @@ public class Challenge extends Randomiser{
         System.out.println("Times Previously Played: " + challengeList[challengeID][2]);
         System.out.println("---------------------------------------------------------------------");
         System.out.println("Updating Times Played.");
-        System.out.println("---------------------------------------------------------------------");
 
         //Update the challenge's played stat by 1
         tempUpdate = Integer.parseInt(challengeList[challengeID][2]) + 1;
